@@ -19,7 +19,7 @@ export default function Dashboard() {
       <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
       {!!user && (
         <h1 className="text-xl">
-          Hi {user.name}! Your email is {user.email}!
+          Hi {user.name}! Your email is {user.email}! Your id is : {user.id}
         </h1>
       )}
       <button
