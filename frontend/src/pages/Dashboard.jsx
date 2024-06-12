@@ -23,7 +23,7 @@ function Dashboard() {
 
   const confirmDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this form?')) {
-      axios.delete(`/createform/${id}`) // replace with your API endpoint if different
+      axios.delete(`/deleteform/${id}`) // replace with your API endpoint if different
         .then(() => {
           setForms(forms.filter(form => form._id !== id));
           toast.success('Form deleted successfully');

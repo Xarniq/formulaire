@@ -15,7 +15,6 @@ const testForm = (req,res) => {
     res.json("test is working")
 }
 
-
 const getForms = async (req, res) => {
     user = getUser(req.cookies["token"])
     try {
@@ -47,11 +46,6 @@ const registerForm = async (req, res) => {
         const { name, numberOfContractants, nameOfContractants } = req.body;
         const userId = user.id 
 
-        if (!name) {
-            return res.json({
-                error: "Name is required"
-            });
-        }
         if (!numberOfContractants) {
             return res.json({
                 error: "Need a number of contractants"
@@ -63,22 +57,30 @@ const registerForm = async (req, res) => {
             });
         }
 
-        const exist = await Form.findOne({ name });
-        if (exist) {
-            return res.json({
-                error: "Name already taken"
-            });
-        }
-
         let form;
         if (req.params.id) {
-            form = await Form.findByIdAndUpdate(req.params.id, {
-                name,
-                numberOfContractants,
-                nameOfContractants,
-                user: userId 
-            }, { new: true });
+            form = await Form.findById(req.params.id);
+            if (!form) {
+                return res.status(404).json({
+                    error: "Form not found"
+                });
+            }
+            form.name = name;
+            form.numberOfContractants = numberOfContractants;
+            form.nameOfContractants = nameOfContractants;
+            await form.save();
         } else {
+            if (!name) {
+                return res.json({
+                    error: "Name is required"
+                });
+            }
+            const exist = await Form.findOne({ name });
+            if (exist) {
+                return res.json({
+                    error: "Name already taken"
+                });
+            }
             form = await Form.create({
                 name,
                 numberOfContractants,
@@ -100,8 +102,19 @@ const registerForm = async (req, res) => {
     }
 };
 
+const deleteForm = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await Form.findByIdAndDelete(id);
+        res.status(200).json({ message: `Form with id ${id} deleted successfully` });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     testForm,
     registerForm,
-    getForms
-}
+    getForms,
+    deleteForm
+};
