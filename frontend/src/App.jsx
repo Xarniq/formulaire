@@ -33,6 +33,7 @@ function App() {
           <Route path='/register' element={<Register />}/>
           <Route path='/dashboard' element={<Dashboard />}/>
           <Route path='/createform' element={<Create />}/>
+          <Route path="/createform/:id?" element={<Create />} />
         </Routes>
     </UserContextProvider>
   )

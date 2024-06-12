@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import isUserValid from '../components/UserValid';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function Dashboard() {
   const { user } = useContext(UserContext);
@@ -14,13 +15,29 @@ function Dashboard() {
     if (!isUserValid(user)) {
       navigate('/login');
     } else {
-      // Fetch forms
       axios.get('/forms') // replace with your API endpoint if different
         .then(res => setForms(res.data))
         .catch(err => console.error(err));
     }
   }, [user, navigate]);
 
+  const confirmDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this form?')) {
+      axios.delete(`/createform/${id}`) // replace with your API endpoint if different
+        .then(() => {
+          setForms(forms.filter(form => form._id !== id));
+          toast.success('Form deleted successfully');
+        })
+        .catch(err => {
+          console.error(err);
+          toast.error('An error occurred. Please try again.');
+        });
+    }
+  };
+
+  const updateForm = (id) => {
+    navigate(`/createform/${id}`); // adjust according to your route setup
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -37,21 +54,32 @@ function Dashboard() {
           </h1>
         </div>
       )}
-      <table>
+      <table className="min-w-full bg-white">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Actions</th>
+            <th className="py-2">ID</th>
+            <th className="py-2">Contract Name</th>
+            <th className="py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {forms.map(form => (
             <tr key={form._id}>
-              <td>{form.name}</td> {/* replace with your form name property */}
-              <td>
-                <button onClick={() => deleteForm(form._id)}>Delete</button>
-                <button onClick={() => updateForm(form._id)}>Update</button>
-                <button onClick={() => printForm(form._id)}>Print</button>
+              <td className="border px-4 py-2">{form._id}</td>
+              <td className="border px-4 py-2 justify-center">{form.name}</td>
+              <td className="border px-4 py-2">
+                <button 
+                  onClick={() => updateForm(form._id)}
+                  className="text-blue-500 hover:text-blue-700 mr-2"
+                >
+                  Modify
+                </button>
+                <button 
+                  onClick={() => confirmDelete(form._id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
@@ -70,4 +98,5 @@ function Dashboard() {
     </div>
   );
 }
+
 export default Dashboard;

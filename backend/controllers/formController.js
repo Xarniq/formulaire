@@ -15,6 +15,32 @@ const testForm = (req,res) => {
     res.json("test is working")
 }
 
+
+const getForms = async (req, res) => {
+    user = getUser(req.cookies["token"])
+    try {
+        const userId = user.id;
+        const forms = await Form.find({ user: userId });
+        
+        if (req.params.id) {
+            const form = await Form.findById(req.params.id);
+            if (!form) {
+                return res.status(404).json({
+                    error: "Form not found"
+                });
+            }
+            return res.json(form);
+        }
+        
+        return res.json(forms);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+}
+
 const registerForm = async (req, res) => {
     user = getUser(req.cookies["token"])
     try {
@@ -44,12 +70,22 @@ const registerForm = async (req, res) => {
             });
         }
 
-        const form = await Form.create({
-            name,
-            numberOfContractants,
-            nameOfContractants,
-            user: userId 
-        });
+        let form;
+        if (req.params.id) {
+            form = await Form.findByIdAndUpdate(req.params.id, {
+                name,
+                numberOfContractants,
+                nameOfContractants,
+                user: userId 
+            }, { new: true });
+        } else {
+            form = await Form.create({
+                name,
+                numberOfContractants,
+                nameOfContractants,
+                user: userId 
+            });
+        }
 
         return res.status(201).json({
             message: "Form registered successfully",
@@ -63,20 +99,6 @@ const registerForm = async (req, res) => {
         });
     }
 };
-
-const getForms = async (req, res) => {
-    user = getUser(req.cookies["token"])
-    try {
-        const userId = user.id;
-        const forms = await Form.find({ user: userId });
-        return res.json(forms);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            error: "Internal server error"
-        });
-    }
-}
 
 module.exports = {
     testForm,

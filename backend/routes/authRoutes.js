@@ -17,10 +17,12 @@ router.get('/',test)
 router.get('/profile', getProfile)
 router.get('/testform', testForm)
 router.get('/forms', getForms)
+router.get('/forms/:id', getForms)
 /* ----------------------------- */
 router.post('/register', registerUser)
 router.post('/login', loginUser)
 router.post('/registerform', registerForm)
+router.post('/registerform/:id', registerForm)
 
 
 

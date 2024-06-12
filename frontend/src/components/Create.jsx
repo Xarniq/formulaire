@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../../context/userContext';
 import isUserValid from '../components/UserValid';
@@ -8,6 +8,7 @@ import isUserValid from '../components/UserValid';
 function Create() {
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
+    const { id } = useParams(); // Get the ID from the URL parameters
     const [data, setData] = useState({
         name: '',
         numberOfContractants: 0,
@@ -17,30 +18,58 @@ function Create() {
     useEffect(() => {
         if (!isUserValid(user)) {
             navigate('/login');
+        } else if (id) {
+            // Fetch contract data if an ID is present
+            axios.get(`/forms/${id}`) // Replace with your API endpoint
+                .then(res => {
+                    const { name, numberOfContractants, nameOfContractants } = res.data;
+                    setData({ name, numberOfContractants, nameOfContractants });
+                })
+                .catch(err => {
+                    console.error(err);
+                    toast.error('Failed to fetch contract data');
+                });
         }
-    }, [user, navigate]);
+    }, [user, navigate, id]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const { name, numberOfContractants, nameOfContractants } = data;
 
         try {
-            const response = await axios.post('/registerform', {
-                name,
-                numberOfContractants,
-                nameOfContractants,
-            });
-
-            if (response.data.error) {
-                toast.error(response.data.error);
-            } else {
-                setData({
-                    name: '',
-                    numberOfContractants: 0,
-                    nameOfContractants: []
+            if (id) {
+                // Update form if an ID is present
+                const response = await axios.put(`/registerform/${id}`, {
+                    name,
+                    numberOfContractants,
+                    nameOfContractants,
                 });
-                toast.success('Form registered successfully');
-                navigate('/dashboard');
+
+                if (response.data.error) {
+                    toast.error(response.data.error);
+                } else {
+                    toast.success('Form updated successfully');
+                    navigate('/dashboard');
+                }
+            } else {
+                // Create form if no ID is present
+                const response = await axios.post('/registerform', {
+                    name,
+                    numberOfContractants,
+                    nameOfContractants,
+                });
+
+                if (response.data.error) {
+                    toast.error(response.data.error);
+                } else {
+                    setData({
+                        name: '',
+                        numberOfContractants: 0,
+                        nameOfContractants: []
+                    });
+                    toast.success('Form registered successfully');
+                    navigate('/dashboard');
+                }
             }
         } catch (error) {
             console.error(error);
@@ -56,7 +85,7 @@ function Create() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <h1 className="text-3xl font-bold mb-4">Create Form</h1>
+            <h1 className="text-3xl font-bold mb-4">{id ? 'Update Form' : 'Create Form'}</h1>
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md">
                 <div className="mb-4">
                     <label className="block text-gray-700">
@@ -96,7 +125,7 @@ function Create() {
                 <div className="flex justify-center">
                     <input
                         type="submit"
-                        value="Submit"
+                        value={id ? 'Update' : 'Submit'}
                         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
                     />
                 </div>
