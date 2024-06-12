@@ -3,7 +3,7 @@ import axios from 'axios'
 import toast from "react-hot-toast"
 import {Navigate, useNavigate} from "react-router-dom"
 
-export default function Login() {
+function Login() {
   const navigate = useNavigate()
   const [data,setData] = useState({
     email:'',
@@ -21,7 +21,7 @@ export default function Login() {
         toast.error(data.error)
       }else {
         setData({})
-        toast.success('Login succesful. Redirecting....')
+        toast.success('Login succesful!')
         navigate('/dashboard')
       }
     } catch (error){
@@ -70,3 +70,4 @@ export default function Login() {
   </div>
   )
 }
+export default Login

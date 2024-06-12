@@ -8,7 +8,7 @@ const formSchema = new Schema({
     },
     numberOfContractants: Number,
     nameOfContractants: Array,
-    user: { type: Schema.Types.ObjectId, ref: 'User' } // Champ pour stocker l'ID de l'utilisateur associé
+    user: { type: Schema.Types.ObjectId, ref: 'User' } 
 });
 
 const FormModel = mongoose.model('Form', formSchema);
