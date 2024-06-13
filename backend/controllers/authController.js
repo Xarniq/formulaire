@@ -14,6 +14,30 @@ function getUser(token) {
 
 }
 
+function checkName(name) {
+    if (!name){
+        return res.json({
+            error:'name is requried'
+        })
+    }
+}
+
+function checkPass(password) {
+    if (!password || password.length < 6) {
+        return res.json({
+            error: 'password is required and +6 char long'
+        })
+    }
+}
+
+function checkUser(email) {
+    if (!email) {
+        res.json({
+            error:"email doesn't exist"
+        })
+    } 
+}
+
 const test = (req,res) => {
     res.json("test is working")
 }
@@ -22,17 +46,9 @@ const registerUser = async (req,res) => {
     try {
         const {name, email, password} = req.body
         // Check if name was entered
-        if (!name) {
-            return res.json({
-                error: 'name is requried'
-            })
-        }
+        checkName(name)
         // Check if password is good
-        if (!password || password.length < 6) {
-            return res.json({
-                error: 'password is required and +6 char long'
-            })
-        }
+        checkPass(password)
         const exit = await User.findOne({email})
         if (exit) {
             return res.json({
@@ -58,12 +74,10 @@ const loginUser = async (req,res) => {
     try {
         const {email,password} = req.body
         const user = await User.findOne({email})
-        if (!user) {
-            res.json({
-                error:"email doesn't exist"
-            })
-        } 
+        // Check if emai lalready exists
+        checkUser(user)
         const match = await comparePassword(password, user.password)
+        // Check if passwords match
         if(match) {
             jwt.sign({
                 email:user.email,

@@ -43,18 +43,17 @@ function Dashboard() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-3xl font-bold mb-4">Welcome to the dashboard</h1>
       {!!user && (
-        <div>
-          <h1 className="text-xl">
-            <button
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={() => navigate('/createform')}
-            >
-              Create Form
-            </button>
-          </h1>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold mb-4 text-red-400">Hi {user.name}</h1>
+          <button
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded mb-6"
+            onClick={() => navigate('/createform')}
+          >
+            Create Form
+          </button>
         </div>
       )}
-      <table className="min-w-full bg-white">
+      <table className="min-w-full bg-white mb-6">
         <thead>
           <tr>
             <th className="py-2">ID</th>
@@ -85,7 +84,6 @@ function Dashboard() {
           ))}
         </tbody>
       </table>
-
       <button
         className="mt-4 px-4 py-2 bg-purple-500 text-white rounded"
         onClick={() => {
@@ -99,4 +97,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Dashboard

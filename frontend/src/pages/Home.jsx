@@ -2,13 +2,13 @@ import React from 'react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="w-full bg-blue-600 py-6 shadow-md">
+    <div className="min-h-screen flex flex-col overflow-hidden">
+      <header className="w-full bg-blue-600 py-6 shadow-md pt-20"> {/* Added pt-20 */}
         <div className="container mx-auto text-center">
           <h1 className="text-4xl text-white font-bold">Bienvenue sur Formulaire Storage</h1>
         </div>
       </header>
-      <main className="flex-grow overflow-y-auto">
+      <main className="flex-grow flex items-center justify-center">
         <div className="container mx-auto flex flex-col items-center justify-center mt-8">
           <div className="bg-white shadow-md rounded p-6 max-w-2xl text-center">
             <h2 className="text-2xl font-semibold mb-4">Connectez-vous pour utiliser notre site</h2>

@@ -11,6 +11,38 @@ function getUser(token) {
 
 }
 
+function checkNbrContractants(numberOfContractants) {
+    if (!numberOfContractants) {
+        return res.json({
+            error: "Need a number of contractants"
+        });
+    }
+}
+
+function checkNameContractants(nameOfContractants) {
+    if (!nameOfContractants || nameOfContractants.length === 0) {
+        return res.json({
+            error: "Need at least one name"
+        });
+    }
+}
+
+function checkFormName(name) {
+    if (!name) {
+        return res.json({
+            error: "Name is required"
+        });
+    }
+}
+
+function checkExistance(exist) {
+    if (exist) {
+        return res.json({
+            error: "Name already taken"
+        });
+    }
+}
+
 const testForm = (req,res) => {
     res.json("test is working")
 }
@@ -45,17 +77,10 @@ const registerForm = async (req, res) => {
     try {
         const { name, numberOfContractants, nameOfContractants } = req.body;
         const userId = user.id 
-
-        if (!numberOfContractants) {
-            return res.json({
-                error: "Need a number of contractants"
-            });
-        }
-        if (!nameOfContractants || nameOfContractants.length === 0) {
-            return res.json({
-                error: "Need at least one name"
-            });
-        }
+        // Check if the number of contractants != 0
+        checkNbrContractants(numberOfContractants)
+        // Check if the name of contractants is correct
+        checkNameContractants(nameOfContractants)
 
         let form;
         if (req.params.id) {
@@ -70,17 +95,11 @@ const registerForm = async (req, res) => {
             form.nameOfContractants = nameOfContractants;
             await form.save();
         } else {
-            if (!name) {
-                return res.json({
-                    error: "Name is required"
-                });
-            }
+            // Check if the input of the form name is filled
+            checkFormName(name)
             const exist = await Form.findOne({ name });
-            if (exist) {
-                return res.json({
-                    error: "Name already taken"
-                });
-            }
+            // Check if the form with a similar name exists (not the content)
+            checkExistance(exist)
             form = await Form.create({
                 name,
                 numberOfContractants,
